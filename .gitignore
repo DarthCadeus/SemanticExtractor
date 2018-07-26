@@ -1,0 +1,15 @@
+generators
+*.txt
+*.docx
+CastForm.py
+*.zip
+*.pref
+solutions.md
+*.png
+tutorial.py
+main.py
+sme.py
+.idea
+*.pyc
+__pychache__
+.DS_Store
