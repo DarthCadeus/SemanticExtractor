@@ -1,5 +1,8 @@
 generators
-*.txt
+doc1.txt
+corpus.txt
+something.txt
+TestLog.txt
 *.docx
 CastForm.py
 *.zip
