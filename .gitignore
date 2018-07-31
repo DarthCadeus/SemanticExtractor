@@ -18,3 +18,5 @@ __pychache__
 .DS_Store
 Logs*
 Graphs
+.vscode
+wiki
