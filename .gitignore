@@ -16,3 +16,5 @@ sme.py
 *.pyc
 __pychache__
 .DS_Store
+Logs*
+Graphs

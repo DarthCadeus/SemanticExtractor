@@ -39,7 +39,7 @@ def get_nouns_gerunds(tg_corpus):
                 yield EC.Action(tg[0], index=tgi)
             else:
                 yield EC.Entity(tg[0], index=tgi)
-        elif tg[1] == "VBG":  # I literally did not include this
+        elif tg[1] == "VBG":
             yield EC.Action(tg[0], index=tgi)
 
 
@@ -219,6 +219,11 @@ def extract(cps, cpm=False):
             corpus = cpsc.read().replace("\n", "")
     else:
         corpus = cps
+        if type(corpus) == list:
+            print("corpus", " ".join(corpus))
+        else:
+            print("corpus", corpus)
+            corpus = corpus.split(" ")
     tagged = NLP.Basic(st).tag(corpus)  # the tagger will do the tokenization
     print("tagged corpus: ", tagged)
     entities = create_entities(tagged)

@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 """
 Newest version of all Classes used in Semantic Extraction here
 Fixed several bugs: (v0.2)

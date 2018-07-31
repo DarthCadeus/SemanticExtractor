@@ -1,7 +1,7 @@
 import contextlib
 import datetime
 now = datetime.datetime.now()
-count_limit = 10
+count_limit = 500
 time_limit = float("inf")
 name = f"{now.month}.{now.day} {now.hour}:{now.minute} count {count_limit} time {time_limit} TestLog.txt"
 import SemanticExtraction
