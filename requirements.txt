@@ -2,3 +2,4 @@ nltk
 python-docx
 inflect
 termcolor
+networkx

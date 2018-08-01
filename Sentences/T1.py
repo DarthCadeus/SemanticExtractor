@@ -4,11 +4,15 @@ Tier 1 sentences, as in the most basic sentences
 consisting only of a subject, predicate, and object
 See the wiki! https://github.com/DarthCadeus/SemanticExtractor/wiki/Sentence-Tiers
 """
+TIER = 1.2
 import sys
 sys.path.append("..")
 import utils
 import NLPExtension as NLP
 import ExtractorClasses as EC
+import to_graph
+import networkx as nx
+import matplotlib.pyplot as plt
 
 from nltk.tag import StanfordPOSTagger
 st = StanfordPOSTagger("english-bidirectional-distsim.tagger")
@@ -77,4 +81,9 @@ def extract_2(tagged_corpus):
 
 if __name__ == '__main__':
     print("TAGGED:", tagged)
-    print(extract_2(tagged))
+    extracted = extract_2(tagged)
+    print(extracted)
+    graph = to_graph.to_graph(extracted, TIER, True)
+    print(graph.number_of_nodes())
+    nx.draw(graph, with_labels=True, node_size=600)
+    plt.savefig(f"tier {TIER}.png")

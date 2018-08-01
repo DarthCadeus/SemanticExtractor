@@ -1,21 +1,16 @@
 import time
-start_time = time.time()
-print("loading NLP Extension... ")
 from nltk.corpus import wordnet
 from nltk import word_tokenize
 import inflect
 import pickle
 from termcolor import colored
 inflect = inflect.engine()
-print(colored(f"-importing completed in {time.time() - start_time} seconds", "red"))
 ns = open("nouns", "rb")
 # nouns
 nouns = pickle.load(ns)
 ns.close()
-print(colored(f"-nouns loaded from nouns in {time.time() - start_time} seconds", "red"))
 # this gives a sort of general tagging
 wordtags = pickle.load(open("wordtags", "rb"))
-print(colored(f"-wordtags loaded in {time.time() - start_time} seconds", "red"))
 
 
 class Converter:
@@ -156,9 +151,3 @@ class Basic:
         raise NoTaggerFound("This may come as a surprise, but POS taggers are a prerequisite"
                             "for POS tagging! Pass a tagger with Basic(tagger) or pass it as the"
                             "second argument in the function. ")
-
-
-print(colored(f"-Classes defined in {time.time() - start_time} seconds", "red"))
-
-if __name__ == "__main__":
-    print(Determiner.is_gerund("eating"))

@@ -29,7 +29,7 @@ V0.3, INSTEAD OF IN sme.py
 sme.py IS NOW DEPRECATED, SO IS v0.2
 """
 import utils
-
+import matplotlib.pyplot as plt
 
 class Entity:
     def __init__(self, name, index=None, tag=None):
@@ -349,6 +349,6 @@ if __name__ == "__main__":
     image = g1.draw(gx, {
         "node_size": 700,
         "with_labels": True
-    }, force_ascii=True)
-    print(image)
-    # plt.savefig("test.png")
+    })
+    # print(image)
+    plt.savefig("test.png")
