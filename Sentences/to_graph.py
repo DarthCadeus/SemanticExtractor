@@ -57,14 +57,15 @@ def to_graph(extracted, tier=None, display_opt=False):
         if display_opt:
             pdt = pdt[0]
         obj = guard(extracted[8])
-        if not display_opt:
-            obj = EC.Entity(obj[0], tag=obj[1])
-            obj.dt = extracted[9]
-            obj.all = extracted[10]
-            obj.adt = extracted[11]
-            for attr in extracted[4]:
-                setattr(obj, attr[0], None)
-        else:
-            obj = obj[0]
+        if obj != nil:
+            if not display_opt:
+                obj = EC.Entity(obj[0], tag=obj[1])
+                obj.dt = extracted[9]
+                obj.all = extracted[10]
+                obj.adt = extracted[11]
+                for attr in extracted[4]:
+                    setattr(obj, attr[0], None)
+            else:
+                obj = obj[0]
         graph.add_edge(sbj, obj, object=pdt)
     return graph
