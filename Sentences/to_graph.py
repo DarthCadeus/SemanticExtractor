@@ -42,4 +42,29 @@ def to_graph(extracted, tier=None, display_opt=False):
         else:
             obj = obj[0]
         graph.add_edge(sbj, obj, object=pdt)
+    elif tier == 1.3:
+        sbj = extracted[3]
+        if not display_opt:
+            sbj = EC.Entity(sbj[0], tag=sbj[1])
+            sbj.dt = extracted[0]
+            sbj.all = extracted[1]
+            sbj.adt = extracted[2]
+            for attr in extracted[1]:
+                setattr(sbj, attr[0], None)  # leave this empty for now ...
+        else:
+            sbj = sbj[0]
+        pdt = extracted[4]
+        if display_opt:
+            pdt = pdt[0]
+        obj = guard(extracted[8])
+        if not display_opt:
+            obj = EC.Entity(obj[0], tag=obj[1])
+            obj.dt = extracted[9]
+            obj.all = extracted[10]
+            obj.adt = extracted[11]
+            for attr in extracted[4]:
+                setattr(obj, attr[0], None)
+        else:
+            obj = obj[0]
+        graph.add_edge(sbj, obj, object=pdt)
     return graph
