@@ -23,16 +23,16 @@ def extract_1(tagged_corpus):
         "sbj_att": [],
         "sbj_adt": [],
         "sbj": None,
-        "sbj_tpa": None,
+        "sbj_tpa": [],
         "pdt": None,
         "obj_toi": False,
         "obj_cmp": False, # is complement?
         "obj_dt": None,
-        "obj_att": None,
-        "obj_adt": None,
+        "obj_att": [],
+        "obj_adt": [],
         "obj": None,
         "obj_tpa": []
-    }  # these will be compacted on return
+    }
     for word in tagged_corpus:
         if word[0].lower() == "to":
             if sentence["sbj"] and sentence["pdt"] and not sentence["obj"]:
@@ -54,7 +54,7 @@ def extract_1(tagged_corpus):
                         else:
                             sentence["obj_att"].append([[word], None])
                     else:
-                        sentence["obj_att."]append([[word], None])
+                        sentence["obj_att"].append([[word], None])
                 else:
                     if sentence["obj"]:
                         sentence["obj_tpa"].append(word)
@@ -74,7 +74,7 @@ def extract_1(tagged_corpus):
         if NLP.Converter.penn_to_wn(word[1]) == "a" or word[1] == "PRP$":
             if sentence["pdt"] and not sentence["obj_toi"]:
                 if sentence["obj_att"]:
-                    closest = sentence["obj_att"][len(obj_att)-1]
+                    closest = sentence["obj_att"][len(sentence["obj_att"])-1]
                     if closest[1] is None:
                         closest[1] = word
                     else:
@@ -83,7 +83,7 @@ def extract_1(tagged_corpus):
                     sentence["obj_att"].append([[], word])
             elif not sentence["sbj_toi"]:
                 if sentence["sbj_att"]:
-                    closest = sentence["sbj_att"][len(sbj_att)-1]
+                    closest = sentence["sbj_att"][len(sentence["sbj_att"])-1]
                     if closest[1] is None:
                         closest[1] = word
                     else:
@@ -114,7 +114,7 @@ def extract_1(tagged_corpus):
                     else:
                         sentence["obj"] = word
             else:
-                if sentence["pdt"] and not sentence["obj_toi:
+                if sentence["pdt"] and not sentence["obj_toi"]:
                     sentence["obj"] = word
                 elif not sentence["sbj_toi"]:
                     sentence["sbj"] = word
@@ -132,17 +132,24 @@ def extract_1(tagged_corpus):
     return sentence  # much more concise!
 
 
-corpus = "The cake was delicious"
-tagged = NLP.Basic(st).tag(corpus)
+corpora = [
+"The tall man is a director"
+]
+start_time = time.time()
+tagger = NLP.Basic(st)
+tagged_group = [tagger.tag(x) for x in corpora]
 
 if __name__ == '__main__':
-    print("TAGGED:", tagged)
-    start_time = time.time()
-    extracted = extract_1(tagged)
-    print(extracted)
-    graph = to_graph.to_graph(extracted, TIER, True)
-    print(graph.number_of_nodes())
-    nx.draw(graph, with_labels=True, node_size=600)
+    print(f"Tagging complete in {time.time()-start_time}")
+    for tagged_index in range(len(tagged_group)):
+        tagged = tagged_group[tagged_index]
+        plt.figure(tagged_index+1)
+        print("TAGGED:", tagged)
+        extracted = extract_1(tagged)
+        print(extracted)
+        graph = to_graph.to_graph(extracted, TIER, True)
+        nx.draw(graph, with_labels=True, node_size=600)
+        print("==========")
+    print(f"TIME: {time.time() - start_time} for a count of {len(corpora)}")
     plt.show()
     # plt.savefig(f"tier {TIER if TIER != 0 else 'UNDEFINED'}.png")
-    print(f"TIME: {time.time() - start_time}")
