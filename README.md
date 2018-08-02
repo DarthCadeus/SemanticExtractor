@@ -1,6 +1,9 @@
 # Semantic Extractor
 Used to extract the meaning of a corpus of Natural Language text. Read the wiki for more information.
 
+# Clarification
+The author "Li Bingdong" is the same as "Bingdong Li". The difference arose because of git's automatically configuring the author name.
+
 # Files
 This is **not** yet a python package, so do not try to install it.
 ## root

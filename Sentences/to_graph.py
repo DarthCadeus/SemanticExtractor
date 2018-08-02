@@ -102,4 +102,34 @@ def to_graph(extracted, tier=None, display_opt=False):
             else:
                 obj = obj[0]
         graph.add_edge(sbj, obj, object=pdt)
+    elif tier == 2.1:  # with the new twist with sentence
+        sbj = extracted["sbj"]
+        if not display_opt:
+            sbj = EC.Entity(sbj[0], tag=sbj[1])
+            sbj.dt = extracted["sbj_dt"]
+            sbj.all = extracted["sbj_att"]
+            sbj.adt = extracted["sbj_adt"]
+            sbj.toi = extracted["sbj_toi"]
+            sbj.tpa = extracted["sbj_tpa"]
+            for attr in extracted["sbj_att"]:
+                setattr(sbj, attr[0], None)
+        else:
+            sbj = sbj[0]
+        pdt = extracted["pdt"]
+        if display_opt:
+            pdt = pdt[0]
+        obj = guard(extracted["obj"])
+        if obj != nil:
+            if not display_opt:
+                obj = EC.Entity(obj[0], tag=obj[1])
+                obj.dt = extracted["obj_dt"]
+                obj.all = extracted["obj_att"]
+                obj.adt = extracted["obj_adt"]
+                obj.toi = extracted["obj_toi"]
+                obj.tpa = extracted["obj_tpa"]
+                for attr in extracted[4]:
+                    setattr(obj, attr[0], None)
+            else:
+                obj = obj[0]
+        graph.add_edge(sbj, obj, object=pdt)
     return graph

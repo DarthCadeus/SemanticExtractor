@@ -27,6 +27,14 @@ ALL USAGES OF THE CLASSES SHOULD REFER TO THE NEWEST VERSION HERE (CURRENTLY
 V0.3, INSTEAD OF IN sme.py
 
 sme.py IS NOW DEPRECATED, SO IS v0.2
+
+Additions: (v0.4)
+    Added SentenceResult class
+
+ALL USAGES OF THE CLASSES SHOULD REFER TO THE NEWEST VERSION HERE (CURRENTLY
+V0.4, INSTEAD OF IN sme.py
+
+sme.py IS NOW DEPRECATED, SO IS v0.3
 """
 import utils
 import matplotlib.pyplot as plt
@@ -327,6 +335,17 @@ class CorpusGraph:
                 ret += si + "\n"
                 ret += ("#" * ml + "\n") * 2
         return ret
+
+
+class Container:
+    def __init__(self, **kwargs):
+        for i in kwargs:
+            setattr(self, i, kwargs[i])
+
+
+class SentenceResult:  # tier 2.1
+    def __init__(self):
+        self.mode=None  # pass for now
 
 
 if __name__ == "__main__":

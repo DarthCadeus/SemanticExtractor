@@ -376,7 +376,7 @@ def extract_5(tagged_corpus):
             obj_tpa, sbj_toi, obj_toi
 
 
-corpus = "To escape too quickly is death"
+corpus = "She sent him a gift"
 tagged = NLP.Basic(st).tag(corpus)
 
 if __name__ == '__main__':
