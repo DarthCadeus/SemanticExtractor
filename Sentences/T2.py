@@ -103,13 +103,14 @@ def extract_1(tagged_corpus):
             if NLP.Converter.penn_to_wn(word[1]) == "n":
                 if not sentence["pdt"] and not sentence["sbj_toi"]:
                     if sentence["sbj"]:
-                        sentence["sbj_adt"].append(sbj)
+                        sentence["sbj_adt"].append(sentence["sbj"])
                         sentence["sbj"] = word
                     else:
                         sentence["sbj"] = word
                 elif not sentence["obj_toi"]:
                     if sentence["obj"]:
-                        sentence["obj_adt"].append(obj)
+                        if not sentence["obj_cmp"]:
+                            sentence["obj_adt"].append(sentence["obj"])
                         sentence["obj"] = word
                     else:
                         sentence["obj"] = word
@@ -133,7 +134,7 @@ def extract_1(tagged_corpus):
 
 
 corpora = [
-"The tall man is a director"
+"The big, tall, and fat man is a terrible director"
 ]
 start_time = time.time()
 tagger = NLP.Basic(st)
@@ -147,8 +148,8 @@ if __name__ == '__main__':
         print("TAGGED:", tagged)
         extracted = extract_1(tagged)
         print(extracted)
-        graph = to_graph.to_graph(extracted, TIER, True)
-        nx.draw(graph, with_labels=True, node_size=600)
+        graph = to_graph.to_graph(extracted, TIER, True)  # display is integrated
+        # nx.draw(graph, with_labels=True, node_size=600)
         print("==========")
     print(f"TIME: {time.time() - start_time} for a count of {len(corpora)}")
     plt.show()

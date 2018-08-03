@@ -1,8 +1,9 @@
 import networkx as nx
+import matplotlib.pyplot as plt
 nil = lambda: None
 guard = lambda x: nil if x is None else x
 def to_graph(extracted, tier=None, display_opt=False):
-    graph = nx.Graph()
+    graph = nx.DiGraph()
     # TODO: handle PRPs separately
     if tier == 1.1:
         sbj = extracted[0]
@@ -132,4 +133,22 @@ def to_graph(extracted, tier=None, display_opt=False):
             else:
                 obj = obj[0]
         graph.add_edge(sbj, obj, object=pdt)
+    if display_opt:
+        nx.draw(graph, pos={
+            sbj: (10, 10),
+            obj: (100, 100)
+        }, with_labels=True, node_size=600)
+        plt.text(55, 55, pdt, fontsize=16, bbox=dict(facecolor="white"))
+        sbj_stf = extracted["sbj_att"]  # subject stuff
+        for char in range(len(sbj_stf)):
+            chartext = sbj_stf[char]
+            plt.annotate(chartext[1][0], (10, 10), (10, 10+5*(char+1)), arrowprops={
+                "arrowstyle": "->"
+            })
+        obj_stf = extracted["obj_att"]
+        for char in range(len(obj_stf)):
+            chartext = obj_stf[char]
+            plt.annotate(chartext[1][0], (100, 100), (100, 100-5*(char+1)), arrowprops={
+                "arrowstyle": "->"
+            })
     return graph
