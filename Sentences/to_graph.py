@@ -103,7 +103,7 @@ def to_graph(extracted, tier=None, display_opt=False):
             else:
                 obj = obj[0]
         graph.add_edge(sbj, obj, object=pdt)
-    elif tier == 2.1:  # with the new twist with sentence
+    elif tier == 2.1 or tier == 2.2:  # with the new twist with sentence
         sbj = extracted["sbj"]
         if not display_opt:
             sbj = EC.Entity(sbj[0], tag=sbj[1])
@@ -139,6 +139,9 @@ def to_graph(extracted, tier=None, display_opt=False):
             obj: (100, 100)
         }, with_labels=True, node_size=600)
         plt.text(55, 55, pdt, fontsize=16, bbox=dict(facecolor="white"))
+        if tier == 2.2:
+            if extracted["disagree"]:
+                plt.text(0, 100, "DISAGREEMENT!", fontsize=30, bbox=dict(facecolor="red"))
         sbj_stf = extracted["sbj_att"]  # subject stuff
         for char in range(len(sbj_stf)):
             chartext = sbj_stf[char]

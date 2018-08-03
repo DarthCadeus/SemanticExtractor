@@ -114,5 +114,18 @@ def s_insert(string, char, index):
     return string[:index] + char + string[index:]
 
 
+def deep_in(l, itm):
+    exs = False
+    for i in l:
+        if type(i) == list:
+            res = deep_in(i, itm)
+            if res:
+                return i
+        else:
+            if itm == i:
+                return itm
+    return False
+
+
 if __name__ == "__main__":
     print(list(partition([1, None, None, 4, 2, None, 1], None)))
