@@ -114,17 +114,22 @@ def s_insert(string, char, index):
     return string[:index] + char + string[index:]
 
 
-def deep_in(l, itm):
-    exs = False
-    for i in l:
-        if type(i) == list:
-            res = deep_in(i, itm)
+def deep_in(l, itm, key=None):
+    if key is None:
+        key = lambda x: x
+    for j in l:
+        if type(j) == list or type(j) == tuple:
+            res = deep_in(j, itm, key=key)
             if res:
-                return i
+                return j
         else:
-            if itm == i:
+            if itm == key(j):
                 return itm
     return False
+
+
+def verify(sentence):
+    return sentence["pdt"] and sentence["sbj"]
 
 
 if __name__ == "__main__":
