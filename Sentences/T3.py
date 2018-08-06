@@ -501,6 +501,7 @@ def extract_4(tagged_corpus):
         if word[0].lower() in ["a", "the", "an"]:
             if sentence["pdt"] and not sentence["obj_toi"]:
                 if sentence["obj_adt"] or sentence["obj_att"]:
+                    print("determiner too late error")
                     return {
                         "sbj": None,
                         "pdt": None
@@ -508,6 +509,7 @@ def extract_4(tagged_corpus):
                 sentence["obj_dt"] = word
             elif not sentence["sbj_toi"]:
                 if sentence["sbj_adt"] or sentence["sbj_att"]:
+                    print("determiner too late error (subject)")
                     return {
                         "sbj": None,
                         "pdt": None
@@ -515,7 +517,7 @@ def extract_4(tagged_corpus):
                 sentence["sbj_dt"] = word
         if NLP.Converter.penn_to_wn(word[1]) == "r":
             if sentence["pdt"]:
-                if not sentence["obj_dtr"] and not mark and sentence["pss_vce"]:  # the same thing
+                if not sentence["obj_dtr"] and not mark:  # the same thing
                     sentence["pdt_ptc"].append(word)
                 elif not sentence["obj_toi"]:
                     if sentence["obj_att"]:
@@ -613,6 +615,7 @@ def extract_4(tagged_corpus):
             elif not sentence["pdt"]:
                 sentence["pdt"] = word
                 if not sentence["sbj"]:
+                    print("subjectless predicate error")
                     return {
                         "sbj": None,
                         "pdt": None
@@ -667,14 +670,30 @@ def extract_4(tagged_corpus):
 
     return sentence
 
+
+def extract_5(tagged_corpus, untagged):
+    global TIER
+    TIER = 3.5
+    if tagged_corpus[::-1][0][0] == "!":  # take out the first item of the last item in the corpus
+        print("Imperative")
+        comparison = extract_4(tagged_corpus)
+        if type(comparison) == EC.SentenceResult:
+            if comparison():  # this is okay because my __call__ method is set to verify self
+                print("not Imperative after all")
+                return comparison
+        # It is now definitely imperative
+        # to make it complete, insert the subject "You"
+        # currently this cannot handle cases with let, of course
+        untagged.insert(0, "You")
+        tagged_corpus = nltk.pos_tag(untagged)
+    return extract_4(tagged_corpus)
+
+
 corpora = [
-    "The Great Fire quickly spread."
+    "Take out quickly the ridiculously stinking disgusting trash!"
 ]
 start_time = time.time()
 
-# tagger = NLP.Basic(nltk.pos_tag_sents)
-# tagged_group = [tagger.tag(x) for x in corpora]
-# print(tagger.)
 tokenized_corpora = [NLP.Basic.tokenize(x) for x in corpora]
 tagged_group = nltk.pos_tag_sents(tokenized_corpora)
 
@@ -684,7 +703,7 @@ if __name__ == '__main__':
         tagged = tagged_group[tagged_index]
         plt.figure(tagged_index+1)
         print("TAGGED:", tagged)
-        extracted = extract_4(tagged)
+        extracted = extract_5(tagged, tokenized_corpora[tagged_index])
         print(extracted)
         if not utils.verify(extracted):
             print(colored("CHECKING ALTS", "red"))

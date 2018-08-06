@@ -509,7 +509,6 @@ object {colored("to infinitive", "yellow") if self.obj["toi"] else ""}
         }
 
 
-
 if __name__ == "__main__":
     # e1 = Entity("John")
     # e2 = Entity("Jake")
