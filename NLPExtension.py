@@ -145,9 +145,9 @@ class Basic:
             tkn_corpus = Basic.tokenize(tkn_corpus)  # sort of sugar. Integrated into tagger comes the
             # word tokenizer
         if self.tagger:
-            return self.tagger.tag(tkn_corpus)
+            return self.tagger(tkn_corpus)
         if tagger:
-            return tagger.tag(tkn_corpus)
+            return tagger(tkn_corpus)
         raise NoTaggerFound("This may come as a surprise, but POS taggers are a prerequisite"
                             "for POS tagging! Pass a tagger with Basic(tagger) or pass it as the"
                             "second argument in the function. ")

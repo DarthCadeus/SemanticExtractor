@@ -13,7 +13,7 @@ import copy
 from termcolor import colored
 
 from nltk.tag import StanfordPOSTagger
-st = StanfordPOSTagger("english-bidirectional-distsim.tagger")
+st = StanfordPOSTagger("english-bidirectional-distsim.tagger").tag
 
 def extract_1(tagged_corpus):
     global TIER
@@ -467,11 +467,11 @@ def extract_3(tagged_corpus):
 corpora = [
     "The tree was pulled down"
 ]
-start_time = time.time()
-tagger = NLP.Basic(st)
-tagged_group = [tagger.tag(x) for x in corpora]
 
 if __name__ == '__main__':
+    start_time = time.time()
+    tagger = NLP.Basic(st)
+    tagged_group = [tagger.tag(x) for x in corpora]
     print(f"Tagging complete in {time.time()-start_time}")
     for tagged_index in range(len(tagged_group)):
         tagged = tagged_group[tagged_index]

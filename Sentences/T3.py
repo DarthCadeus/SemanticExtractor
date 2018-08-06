@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import copy
 import time
 import copy
+import nltk
 from termcolor import colored
 from T2 import process_2_1
 
@@ -484,11 +485,16 @@ def extract_3(tagged_corpus):
     return sentence
 
 corpora = [
-    "The sun was pulled quickly by the sacred beatle"
+    "This command updates the index",
+    "The index is updated by this command"
 ]
 start_time = time.time()
-tagger = NLP.Basic(st)
-tagged_group = [tagger.tag(x) for x in corpora]
+
+# tagger = NLP.Basic(nltk.pos_tag_sents)
+# tagged_group = [tagger.tag(x) for x in corpora]
+# print(tagger.)
+tokenized_corpora = [NLP.Basic.tokenize(x) for x in corpora]
+tagged_group = nltk.pos_tag_sents(tokenized_corpora)
 
 if __name__ == '__main__':
     print(f"Tagging complete in {time.time()-start_time}")
