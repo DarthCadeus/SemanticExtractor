@@ -465,8 +465,7 @@ def extract_3(tagged_corpus):
 
 
 corpora = [
-    "The trees is dead",
-    "Him saw she"
+    "The tree was pulled down"
 ]
 start_time = time.time()
 tagger = NLP.Basic(st)
