@@ -12,7 +12,6 @@ ns.close()
 # this gives a sort of general tagging
 wordtags = pickle.load(open("wordtags", "rb"))
 
-
 class Converter:
     def __init__(self):
         pass
@@ -33,6 +32,15 @@ class Converter:
     def penn_base_form(tag):
         if tag in ["JJ", "JJR", "JJS", "PDT", "PRP$"]:
             return "des"
+
+    @staticmethod
+    def to_sbj(pronoun):
+        return {
+            "them": "they",
+            "her": "she",
+            "him": "he",
+            "us": "we"
+        }.get(pronoun, pronoun)
 
 
 class Determiner:
