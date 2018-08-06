@@ -673,7 +673,6 @@ def extract_4(tagged_corpus):
 
 def extract_5(tagged_corpus, untagged):
     global TIER
-    TIER = 3.5
     if tagged_corpus[::-1][0][0] == "!":  # take out the first item of the last item in the corpus
         print("Imperative")
         comparison = extract_4(tagged_corpus)
@@ -686,11 +685,43 @@ def extract_5(tagged_corpus, untagged):
         # currently this cannot handle cases with let, of course
         untagged.insert(0, "You")
         tagged_corpus = nltk.pos_tag(untagged)
-    return extract_4(tagged_corpus)
+        extracted = extract_4(tagged_corpus)
+        TIER = 3.5
+        return extracted
+    extracted = extract_4(tagged_corpus)
+    TIER = 3.5  # make sure the correct Tier is registered
+    return extracted
+
+
+def extract_6(tagged_corpus, untagged, force=False):
+    global TIER
+    if tagged_corpus[::-1][0][0] == "!" or force:  # take out the first item of the last item in the corpus
+        if not force:
+            comparison = extract_4(tagged_corpus)
+            if type(comparison) == EC.SentenceResult:
+                if comparison():  # this is okay because my __call__ method is set to verify self
+                    return comparison
+        # It is now definitely imperative
+        # to make it complete, insert the subject "You"
+        # currently this cannot handle cases with let, of course
+        if tagged_corpus[0][0].lower() in ["let"]:
+            untagged.pop(0)
+            if tagged_corpus[1][0].lower() == "'s":
+                untagged.insert(0, "We")
+            non_std = True
+        else:
+            untagged.insert(0, "You")
+        tagged_corpus = nltk.pos_tag(untagged)
+        extracted = extract_4(tagged_corpus)
+        TIER = 3.6
+        return extracted
+    extracted = extract_4(tagged_corpus)
+    TIER = 3.6 # make sure the correct Tier is registered
+    return extracted
 
 
 corpora = [
-    "Take out quickly the ridiculously stinking disgusting trash!"
+    "Let them have dinner!"
 ]
 start_time = time.time()
 
@@ -698,16 +729,19 @@ tokenized_corpora = [NLP.Basic.tokenize(x) for x in corpora]
 tagged_group = nltk.pos_tag_sents(tokenized_corpora)
 
 if __name__ == '__main__':
+    function = extract_6
+    processor = process_2_1
     print(f"Tagging complete in {time.time()-start_time}")
     for tagged_index in range(len(tagged_group)):
         tagged = tagged_group[tagged_index]
         plt.figure(tagged_index+1)
         print("TAGGED:", tagged)
-        extracted = extract_5(tagged, tokenized_corpora[tagged_index])
+        extracted = function(tagged, tokenized_corpora[tagged_index])
         print(extracted)
         if not utils.verify(extracted):
             print(colored("CHECKING ALTS", "red"))
-            all_extracted = list(process_2_1(extracted, tagged))
+            alt_extraction = function(tagged, tokenized_corpora[tagged_index], force=True)
+            all_extracted = list(processor(extracted, tagged))
             for i in all_extracted:
                 print(colored(i, "green"))
                 graph = to_graph.to_graph(i, TIER, True)
