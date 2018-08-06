@@ -686,10 +686,10 @@ def extract_5(tagged_corpus, untagged):
         untagged.insert(0, "You")
         tagged_corpus = nltk.pos_tag(untagged)
         extracted = extract_4(tagged_corpus)
-        TIER = 3.5
+        TIER = 3.5 if 3.5 > TIER else TIER
         return extracted
     extracted = extract_4(tagged_corpus)
-    TIER = 3.5  # make sure the correct Tier is registered
+    TIER = 3.5 if 3.5 > TIER else TIER  # make sure the correct Tier is registered
     return extracted
 
 
@@ -713,16 +713,17 @@ def extract_6(tagged_corpus, untagged, force=False):
             untagged.insert(0, "You")
         tagged_corpus = nltk.pos_tag(untagged)
         extracted = extract_7(tagged_corpus, True)
-        TIER = 3.6
+        extracted.imp = True
+        TIER = 3.6 if 3.6 > TIER else TIER
         return extracted
     extracted = extract_7(tagged_corpus)
-    TIER = 3.6 # make sure the correct Tier is registered
+    TIER = 3.6 if 3.6 > TIER else TIER # make sure the correct Tier is registered
     return extracted
 
 
 def extract_7(tagged_corpus, special=False):
     global TIER
-    TIER = 3.4
+    TIER = 3.7
     sentence = EC.SentenceResult()
     mark = False
     for word in tagged_corpus:

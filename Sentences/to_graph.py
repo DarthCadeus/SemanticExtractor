@@ -134,7 +134,7 @@ def to_graph(extracted, tier=None, display_opt=False):
             else:
                 obj = obj[0]
         graph.add_edge(sbj, obj, object=pdt)
-    elif tier >= 3.1:  # with the new twist with sentence
+    elif 3.7 >= tier >= 3.1:  # with the new twist with sentence
         sbj = extracted["sbj"]
         if type(sbj) is tuple:
             if not display_opt:
@@ -152,7 +152,7 @@ def to_graph(extracted, tier=None, display_opt=False):
         if display_opt:
             pdt = pdt[0]
         else:
-            if tier == 3.2:
+            if tier >= 3.2:
                 pdt = EC.Container(body=pdt, passive=extracted["pss_vce"], att=extracted["pdt_ptc"])
             else:
                 pdt = EC.Container(body=pdt, passive=extracted["pss_vce"])
@@ -169,6 +169,8 @@ def to_graph(extracted, tier=None, display_opt=False):
                     setattr(obj, attr[0], None)
             else:
                 obj = obj[0]
+        graph.voice = extracted["voice"]
+        graph.imperative = extracted["imp"]  # will default to False anyways
         graph.add_edge(sbj, obj, object=pdt)
     if display_opt:
         nx.draw(graph, pos={
@@ -196,6 +198,9 @@ def to_graph(extracted, tier=None, display_opt=False):
                     plt.annotate(chartext[0], (55, 55), (65+5*(char+1), 55), arrowprops={
                         "arrowstyle": "->"
                     })
+            if tier >= 3.5:
+                if extracted["imp"]:
+                    plt.text(0, 60, "Imperative transformed", fontsize=10, bbox=dict(facecolor="yellow"))
         sbj_stf = extracted["sbj_att"]  # subject stuff
         for char in range(len(sbj_stf)):
             chartext = sbj_stf[char]

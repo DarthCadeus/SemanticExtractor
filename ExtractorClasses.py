@@ -405,7 +405,10 @@ class SentenceResult:
             elif key == "obj":
                 return self.obj["bdy"]
             else:
-                return getattr(self, key)
+                try:
+                    return getattr(self, key)
+                except NameError:
+                    return False
 
     def __setitem__(self, key, value):
         if key == "voice":
