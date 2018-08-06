@@ -470,18 +470,18 @@ class SentenceResult:
         form = f"""
 Sentence Item
 =============
-subject {"to infinitive" if self.sbj["toi"] else ""}
+subject {colored("to infinitive", "yellow") if self.sbj["toi"] else ""}
     {self.sbj["bdy"]}
     determiner: {self.sbj["dtr"]}
     attributes: {self.sbj["att"]}
     adjuncts: {self.sbj["adt"]}
     {f'post: {self.sbj["tpa"]}' if self.sbj["toi"] else ""}
 =========
-predicate {"passive voice" if self.mds["voice"] else ""}
+predicate {colored("passive voice", "yellow") if self.mds["voice"]=="pss" else ""}
     {self.pdt["bdy"]}
     particles: {self.pdt["ptc"]}
 =========
-object {"to infinitive" if self.obj["toi"] else ""}
+object {colored("to infinitive", "yellow") if self.obj["toi"] else ""}
     {self.obj["bdy"]}
     determiner: {self.obj["dtr"]}
     attributes: {self.obj["att"]}
