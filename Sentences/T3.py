@@ -335,7 +335,10 @@ def extract_3(tagged_corpus):
     global TIER
     TIER = 3.3
     sentence = EC.SentenceResult()
+    mark = False
     for word in tagged_corpus:
+        if word[0].lower() == "by":
+            mark = True
         if word[0].lower() == "to":
             if sentence["sbj"] and sentence["pdt"] and not sentence["obj"]:
                 sentence["obj_toi"] = True
@@ -358,7 +361,9 @@ def extract_3(tagged_corpus):
                 sentence["sbj_dt"] = word
         if NLP.Converter.penn_to_wn(word[1]) == "r":
             if sentence["pdt"]:
-                if not sentence["obj_toi"]:
+                if not sentence["obj_dtr"] and not mark:  # the same thing
+                    sentence["pdt_ptc"].append(word)
+                elif not sentence["obj_toi"]:
                     if sentence["obj_att"]:
                         closest = sentence["obj_att"][len(sentence["obj_att"])-1]
                         if closest[1] is None:
@@ -431,11 +436,11 @@ def extract_3(tagged_corpus):
             else:
                 if sentence["pdt"] and not sentence["obj_toi"]:
                     sentence["obj"] = word
-                    if word[1] == "PRP" and word[0].lower() in ["he", "she", "they"]:
+                    if word[1] == "PRP" and word[0].lower() in ["he", "she", "they", "I"]:
                         sentence["opn_dis"] = True
                         sentence["err"] = True
                 elif not sentence["sbj_toi"]:
-                    if word[1] == "PRP" and word[0].lower() in ["him", "her", "them"]:
+                    if word[1] == "PRP" and word[0].lower() in ["him", "her", "them", "me"]:
                         sentence["spn_dis"] = True
                         sentence["err"] = True
                     sentence["sbj"] = word
@@ -458,7 +463,7 @@ def extract_3(tagged_corpus):
                 if sentence["sbj"][1] in ["NNS", "NNPS"] and word[1] == "VBZ":
                     sentence["svb_dis"] = True
                     sentence["err"] = True
-                if sentence["sbj"][1] in ["NN", "NNP"] or sentence["sbj"][0].lower() in ["he", "she", "it"] and word[1] != "VBZ":
+                if (sentence["sbj"][1] in ["NN", "NNP"] or sentence["sbj"][0].lower() in ["he", "she", "it"]) and word[1] == "VB":
                     sentence["svb_dis"] = True
                     sentence["err"] = True
                 if word[0].lower() in ["am", "is", "are", "was", "were", "be", "been"]:
@@ -479,7 +484,7 @@ def extract_3(tagged_corpus):
     return sentence
 
 corpora = [
-    "The sun was pulled by a sacred beatle"
+    "The sun was pulled quickly by the sacred beatle"
 ]
 start_time = time.time()
 tagger = NLP.Basic(st)

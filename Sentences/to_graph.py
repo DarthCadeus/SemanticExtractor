@@ -136,17 +136,18 @@ def to_graph(extracted, tier=None, display_opt=False):
         graph.add_edge(sbj, obj, object=pdt)
     elif tier >= 3.1:  # with the new twist with sentence
         sbj = extracted["sbj"]
-        if not display_opt:
-            sbj = EC.Entity(sbj[0], tag=sbj[1])
-            sbj.dt = extracted["sbj_dt"]
-            sbj.all = extracted["sbj_att"]
-            sbj.adt = extracted["sbj_adt"]
-            sbj.toi = extracted["sbj_toi"]
-            sbj.tpa = extracted["sbj_tpa"]
-            for attr in extracted["sbj_att"]:
-                setattr(sbj, attr[0], None)
-        else:
-            sbj = sbj[0]
+        if type(sbj) is tuple:
+            if not display_opt:
+                sbj = EC.Entity(sbj[0], tag=sbj[1])
+                sbj.dt = extracted["sbj_dt"]
+                sbj.all = extracted["sbj_att"]
+                sbj.adt = extracted["sbj_adt"]
+                sbj.toi = extracted["sbj_toi"]
+                sbj.tpa = extracted["sbj_tpa"]
+                for attr in extracted["sbj_att"]:
+                    setattr(sbj, attr[0], None)
+            else:
+                sbj = sbj[0]
         pdt = extracted["pdt"]
         if display_opt:
             pdt = pdt[0]
