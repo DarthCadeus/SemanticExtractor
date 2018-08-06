@@ -38,6 +38,7 @@ sme.py IS NOW DEPRECATED, SO IS v0.3
 """
 import utils
 import matplotlib.pyplot as plt
+from termcolor import colored
 
 class Entity:
     def __init__(self, name, index=None, tag=None):
@@ -343,31 +344,195 @@ class Container:
             setattr(self, i, kwargs[i])
 
 
-class SentenceResult:  # tier 2.1
+class SentenceResult:
     def __init__(self):
-        self.mode=None  # pass for now
+        self.sbj = {
+            "toi": False,
+            "dtr": None,
+            "att": [],
+            "adt": [],
+            "bdy": None,
+            "tpa": []
+        }
+        self.obj = {
+            "toi": False,
+            "dtr": None,
+            "att": [],
+            "adt": [],
+            "bdy": None,
+            "tpa": [],
+            "cmp": False
+        }
+        self.pdt = {
+            "bdy": None,  # the main body of the phrase
+            "ptc": []
+        }
+        self.mds = {
+            "voice": "atv"
+        }
+        self.err = {
+            "ext": False,  # any erros?
+            "svb": False,
+            "spn": False,
+            "opn": False
+        }
+
+    def __getitem__(self, key):
+        if key == "voice":
+            return SentenceResult.expand(self.mds["voice"])
+        if "_dis" in key:
+            err = key.split("_dis")[0]
+            return self.err[err]
+        if "_vce" in key:
+            if key == "pss_vce":
+                return self.mds["voice"] == "pss"
+        if "_" in key:
+            nested = key.split("_")
+            if len(nested) == 2:
+                return getattr(self, nested[0])[nested[1]]
+            elif len(nested) == 3:
+                if nested[2].isnumeric():
+                    return getattr(self, nested[0])[nested[1]][int(nested[2])]  # has to be list
+                else:
+                    return getattr(self, nested[0])[nested[1]]
+            else:
+                return getattr(self, nested[0])[nested[1]]
+        else:
+            if key == "sbj":  # forbid access to the dict
+                return self.sbj["bdy"]
+            elif key == "pdt":
+                return self.pdt["bdy"]
+            elif key == "obj":
+                return self.obj["bdy"]
+            else:
+                return getattr(self, key)
+
+    def __setitem__(self, key, value):
+        if key == "voice":
+            self.chmod(value)
+            return
+        if "_dis" in key:
+            err = key.split("_dis")[0]
+            self.err[err] = value
+            return
+        if "_vce" in key:
+            if key == "pss_vce":
+                if value:
+                    self.mds["voice"] = "pss"
+                else:
+                    self.mds["voice"] = "atv"
+            return
+        if "_" in key:
+            nested = key.split("_")
+            if nested[1] == "dt":
+                nested[1] = "dtr"
+            if len(nested) == 2:
+                getattr(self, nested[0])[nested[1]] = value
+            elif len(nested) == 3:
+                if nested[2].isnumeric():
+                    getattr(self, nested[0])[nested[1]][int(nested[2])] = value  # has to be list
+                else:
+                    getattr(self, nested[0])[nested[1]] = value
+            else:
+                getattr(self, nested[0])[nested[1]] = value
+        else:
+            if key == "sbj":  # forbid access to the dict
+                self.sbj["bdy"] = value
+            elif key == "pdt":
+                self.pdt["bdy"] = value
+            elif key == "obj":
+                self.obj["bdy"] = value
+            elif key == "err":
+                self.err["ext"] = value
+            else:
+                setattr(self, key, value)
+
+    def __call__(self, strict=False):
+        if strict:
+            return self.pdt["bdy"] and self.sbj["bdy"] and not self.iserr()
+        return self.pdt["bdy"] and self.sbj["bdy"]
+
+    def chmod(self, voice):
+        if voice.lower() in ["atv", "active"]:
+            self.mds["voice"] = "atv"
+        elif voice.lower() in ["pss", "passive"]:
+            self.mds["voice"] = "pss"
+
+    def iserr(self):
+        return self.err["ext"]
+
+    def swap(self):
+        temp = self.sbj
+        self.sbj = self.obj
+        self.obj = temp
+
+    def __repr__(self):
+        form = f"""
+Sentence Item
+=============
+subject {"to infinitive" if self.sbj["toi"] else ""}
+    {self.sbj["bdy"]}
+    determiner: {self.sbj["dtr"]}
+    attributes: {self.sbj["att"]}
+    adjuncts: {self.sbj["adt"]}
+    {f'post: {self.sbj["tpa"]}' if self.sbj["toi"] else ""}
+=========
+predicate {"passive voice" if self.mds["voice"] else ""}
+    {self.pdt["bdy"]}
+    particles: {self.pdt["ptc"]}
+=========
+object {"to infinitive" if self.obj["toi"] else ""}
+    {self.obj["bdy"]}
+    determiner: {self.obj["dtr"]}
+    attributes: {self.obj["att"]}
+    adjuncts: {self.obj["adt"]}
+    {f'post: {self.obj["tpa"]}' if self.obj["toi"] else ""}
+    """
+        errs = colored(f"""
+        Errors
+        =========
+        {"subject-verb disagreement" if self.err["svb"] else ""}
+        {"subject pronoun nominative case mismatch" if self.err["spn"] else ""}
+        {"object pronoun nominative case mismatch" if self.err["opn"] else ""}
+        """, "red")
+
+        if self.err["ext"]:
+            return form + "\n" + errs
+        else:
+            return form
+
+    @staticmethod
+    def expand(abbr):
+        return {
+            "atv": "active",
+            "pss": "passive"
+        }
+
 
 
 if __name__ == "__main__":
-    e1 = Entity("John")
-    e2 = Entity("Jake")
-    e3 = Entity("Mary")
-    e4 = Entity("Ben")
-    r1 = Relation([("likes", "VB")])
-    r2 = Relation([("dislikes", "VB")])
-    r3 = Relation([("meets", "VB")])
-    g1 = CorpusGraph([e1, e2, e3, e4])
-    n1 = g1.getNodeByEntity(e1)
-    n2 = g1.getNodeByEntity(e2)
-    n3 = g1.getNodeByEntity(e3)
-    n4 = g1.getNodeByEntity(e4)
-    g1.linkEntities(n1, n2, r1)
-    g1.linkEntities(n2, n3, r2)
-    g1.linkEntities(n3, n4, r3)
-    gx = g1.to_networkx(True)
-    image = g1.draw(gx, {
-        "node_size": 700,
-        "with_labels": True
-    })
-    # print(image)
-    plt.savefig("test.png")
+    # e1 = Entity("John")
+    # e2 = Entity("Jake")
+    # e3 = Entity("Mary")
+    # e4 = Entity("Ben")
+    # r1 = Relation([("likes", "VB")])
+    # r2 = Relation([("dislikes", "VB")])
+    # r3 = Relation([("meets", "VB")])
+    # g1 = CorpusGraph([e1, e2, e3, e4])
+    # n1 = g1.getNodeByEntity(e1)
+    # n2 = g1.getNodeByEntity(e2)
+    # n3 = g1.getNodeByEntity(e3)
+    # n4 = g1.getNodeByEntity(e4)
+    # g1.linkEntities(n1, n2, r1)
+    # g1.linkEntities(n2, n3, r2)
+    # g1.linkEntities(n3, n4, r3)
+    # gx = g1.to_networkx(True)
+    # image = g1.draw(gx, {
+    #     "node_size": 700,
+    #     "with_labels": True
+    # })
+    # # print(image)
+    # plt.savefig("test.png")
+    sentence = SentenceResult()
+    sentence["pdt_ptc"] = ["down"]
+    print(sentence["pdt_ptc_0"])
