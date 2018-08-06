@@ -2,3 +2,4 @@ nltk
 inflect
 termcolor
 networkx
+termcolor

@@ -118,13 +118,12 @@ def deep_in(l, itm, key=None):
     if key is None:
         key = lambda x: x
     for j in l:
-        if type(j) == list or type(j) == tuple:
+        if itm == key(j):
+            return itm
+        elif type(j) == list or type(j) == tuple:
             res = deep_in(j, itm, key=key)
             if res:
                 return j
-        else:
-            if itm == key(j):
-                return itm
     return False
 
 
