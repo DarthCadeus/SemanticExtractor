@@ -1,4 +1,5 @@
 TIER = 0
+DEBUG = True
 import sys
 sys.path.append("..")
 import utils
@@ -671,7 +672,7 @@ def extract_4(tagged_corpus):
     return sentence
 
 
-def extract_5(tagged_corpus, untagged):
+def harness_5(tagged_corpus, untagged):
     global TIER
     if tagged_corpus[::-1][0][0] == "!":  # take out the first item of the last item in the corpus
         print("Imperative")
@@ -693,7 +694,7 @@ def extract_5(tagged_corpus, untagged):
     return extracted
 
 
-def extract_6(tagged_corpus, untagged, force=False):
+def harness_6(tagged_corpus, untagged, force=False):
     global TIER
     if tagged_corpus[::-1][0][0] == "!" or force:  # take out the first item of the last item in the corpus
         if not force:
@@ -713,7 +714,10 @@ def extract_6(tagged_corpus, untagged, force=False):
             untagged.insert(0, "You")
         tagged_corpus = nltk.pos_tag(untagged)
         extracted = extract_7(tagged_corpus, True)
-        extracted.imp = True
+        if type(extracted) == dict:
+            return extracted
+        else:
+            extracted.imp = True
         TIER = 3.6 if 3.6 > TIER else TIER
         return extracted
     extracted = extract_7(tagged_corpus)
@@ -753,7 +757,7 @@ def extract_7(tagged_corpus, special=False):
                 sentence["sbj_dt"] = word
         if NLP.Converter.penn_to_wn(word[1]) == "r":
             if sentence["pdt"]:
-                if not sentence["obj_dtr"] and not mark:  # the same thing
+                if not sentence["obj_dtr"] and not mark and not sentence["obj_adt"] and not sentence["obj_att"] and not sentence["obj"]:  # the same thing
                     sentence["pdt_ptc"].append(word)
                 elif not sentence["obj_toi"]:
                     if sentence["obj_att"]:
@@ -841,7 +845,7 @@ def extract_7(tagged_corpus, special=False):
                             sentence["err"] = True
                         else:
                             sentence["sbj"] = (NLP.Converter.to_sbj(word[0]), word[1])
-                    if not special:
+                    else:
                         sentence["sbj"] = word
 
         if NLP.Converter.penn_to_wn(word[1]) == "v" and \
@@ -856,6 +860,8 @@ def extract_7(tagged_corpus, special=False):
                 sentence["pdt"] = word
                 if not sentence["sbj"]:
                     print("subjectless predicate error")
+                    print("tgd", tagged_corpus)
+                    print("stc", sentence)
                     return {
                         "sbj": None,
                         "pdt": None
@@ -912,7 +918,7 @@ def extract_7(tagged_corpus, special=False):
 
 
 corpora = [
-    "Let them have dinner!"
+    "Open my recent files!"
 ]
 start_time = time.time()
 
@@ -920,7 +926,7 @@ tokenized_corpora = [NLP.Basic.tokenize(x) for x in corpora]
 tagged_group = nltk.pos_tag_sents(tokenized_corpora)
 
 if __name__ == '__main__':
-    function = extract_6
+    function = harness_6
     processor = process_2_1
     print(f"Tagging complete in {time.time()-start_time}")
     for tagged_index in range(len(tagged_group)):

@@ -1,5 +1,8 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import sys
+sys.path.append("..")
+import ExtractorClasses as EC
 nil = lambda: None
 guard = lambda x: nil if x is None else x
 def to_graph(extracted, tier=None, display_opt=False):
@@ -108,7 +111,7 @@ def to_graph(extracted, tier=None, display_opt=False):
         sbj = extracted["sbj"]
         if not display_opt:
             sbj = EC.Entity(sbj[0], tag=sbj[1])
-            sbj.dt = extracted["sbj_dt"]
+            sbj.dt = extracted["sbj_dtr"]
             sbj.all = extracted["sbj_att"]
             sbj.adt = extracted["sbj_adt"]
             sbj.toi = extracted["sbj_toi"]
@@ -139,13 +142,13 @@ def to_graph(extracted, tier=None, display_opt=False):
         if type(sbj) is tuple:
             if not display_opt:
                 sbj = EC.Entity(sbj[0], tag=sbj[1])
-                sbj.dt = extracted["sbj_dt"]
+                sbj.dt = extracted["sbj_dtr"]
                 sbj.all = extracted["sbj_att"]
                 sbj.adt = extracted["sbj_adt"]
                 sbj.toi = extracted["sbj_toi"]
                 sbj.tpa = extracted["sbj_tpa"]
                 for attr in extracted["sbj_att"]:
-                    setattr(sbj, attr[0], None)
+                    setattr(sbj, attr[1][0], None)
             else:
                 sbj = sbj[0]
         pdt = extracted["pdt"]
@@ -160,23 +163,32 @@ def to_graph(extracted, tier=None, display_opt=False):
         if obj != nil:
             if not display_opt:
                 obj = EC.Entity(obj[0], tag=obj[1])
-                obj.dt = extracted["obj_dt"]
+                obj.dt = extracted["obj_dtr"]
                 obj.all = extracted["obj_att"]
                 obj.adt = extracted["obj_adt"]
                 obj.toi = extracted["obj_toi"]
                 obj.tpa = extracted["obj_tpa"]
-                for attr in extracted[4]:
-                    setattr(obj, attr[0], None)
+                for attr in extracted["obj_att"]:
+                    setattr(obj, attr[1][0], None)
             else:
                 obj = obj[0]
         graph.voice = extracted["voice"]
         graph.imperative = extracted["imp"]  # will default to False anyways
-        graph.add_edge(sbj, obj, object=pdt)
+        # graph.add_edge(sbj, obj, object=pdt)
+        graph.add_node("sbj", object=sbj)
+        graph.add_node("obj", object=obj)
+        graph.add_edge("sbj", "obj", object=pdt)
     if display_opt:
-        nx.draw(graph, pos={
-            sbj: (10, 10),
-            obj: (100, 100)
-        }, with_labels=True, node_size=600)
+        if tier >= 3.1:
+            nx.draw(graph, pos={
+                "sbj": (10, 10),
+                "obj": (100, 100)
+            }, with_labels=True, node_size=600)
+        else:
+            nx.draw(graph, pos={
+                sbj: (10, 10),
+                obj: (100, 100)
+            }, with_labels=True, node_size=600)
         plt.text(55, 55, pdt, fontsize=16, bbox=dict(facecolor="white"))
         if tier >= 2.2:
             if tier == 2.2:

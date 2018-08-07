@@ -39,6 +39,7 @@ sme.py IS NOW DEPRECATED, SO IS v0.3
 import utils
 import matplotlib.pyplot as plt
 from termcolor import colored
+import os, sys
 
 class Entity:
     def __init__(self, name, index=None, tag=None):
@@ -407,7 +408,7 @@ class SentenceResult:
             else:
                 try:
                     return getattr(self, key)
-                except NameError:
+                except AttributeError:
                     return False
 
     def __setitem__(self, key, value):
@@ -510,6 +511,25 @@ object {colored("to infinitive", "yellow") if self.obj["toi"] else ""}
             "atv": "active",
             "pss": "passive"
         }
+
+
+# HiddenPrints, curteosy of Alexander Chzhen@StackOverflow
+class NoStdout:
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
+
+
+class YesStdout:
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
 
 
 if __name__ == "__main__":
